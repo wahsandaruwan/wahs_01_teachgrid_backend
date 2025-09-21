@@ -3,10 +3,12 @@ import express from "express";
 import cors from "cors";
 import 'dotenv/config';
 import cookieParser from "cookie-parser";
+import connectDB from "./config/mongodb.js";
 
 // Global instances
 const app = express();
 const PORT = process.env.PORT || 3301;
+connectDB();
 
 // Common middleware
 app.use(cors({credentials:true}));
