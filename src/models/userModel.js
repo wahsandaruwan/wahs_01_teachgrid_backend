@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema = new mangoose.Schema({
+const userSchema = new mongoose.Schema({
     //personal data
     name : {type: String, required : true},
     email : {type: String, required : true, unique : true},
@@ -22,6 +22,6 @@ const userSchema = new mangoose.Schema({
    resetOtpExpireAt : {type: Number, default: 0},
 });
 
-const userModel = mangoose.models.user || mangoose.model('user', userSchema);
+const userModel = mongoose.models.user || mongoose.model('user', userSchema);
 
 export default userModel; 

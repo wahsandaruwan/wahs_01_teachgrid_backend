@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import userModel from "./models/userModel.js";
+import userModel from "../models/userModel.js";
 
 // Controller for Registering new User
 export const register = async (req, res ) => {
@@ -83,13 +83,13 @@ export const login = async (req, res) => {
 // Controller for Logout
 export const logout = async (req,res) => {
     try{
-        res.ClearCookie('token', {
+        res.clearCookie('token', {
             httpOnly : true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? "none" : "strict",
         });
 
-        return res.json({success: true, message: "Logged Out Successfully!"})
+        return res.json({success: true, message: "Logged Out Successfully"})
 
     } catch (error){
         return res.json ({success: false, message: error.message});
