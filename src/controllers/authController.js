@@ -110,3 +110,75 @@ export const logout = async (req,res) => {
         return res.json ({success: false, message: error.message});
     }
 }
+
+// sending verification OTP to the user
+export const sendVerifyOtp = async (req,res) => {
+    try {
+        
+        const {userId} = req.body;
+
+        const user = await userModel.findById(userId);
+
+        if(user.isAccountVerified){
+           return res.json({success: false, message: 'user has been already verified'});
+        }
+        
+        // Generating a 6 digit randon number
+       const otp = String(Math.floor (100000 + Math.random() * 900000));
+
+       // Adding the otp to the db
+       user.verifyOtp = otp;
+       user.verifyOtpExpireAt = Date.now() + 24 * 60 * 60 * 1000;
+       await user.save();
+
+        // Email for the user
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: user.email,
+            subject: 'Account Verification OTP',
+            text: `Your OTP to verify your account at TeachGrid is ${otp}
+            
+            If you did not request this account or believe this is a mistake, contact support at support@teachgrid.com.`
+        }
+        await transporter.sendMail(mailOptions);
+
+        return res.json({success: true, message: 'Verification email has been sent via email'})
+
+    } catch (error) {
+       return res.json({success: false , message: error.message});
+    }
+}
+
+// verifying email controller
+export const verifyEmail = async(req,res) =>{
+    const {userId, otp} = req.body;
+    if (!userId || !otp){
+        return res.json({success: false, message: 'Mising details'});
+    }
+
+    try {
+        const user = await userModel.findById(userId);
+
+        if(!user){
+           return res.json({success:false, message: 'Invalid User, User Not Found!'});
+        }
+
+        if (user.verifyOtp === '' || user.verifyOtp !== otp){
+           return res.json({success: false, message: 'Invalid OTP'});
+        }
+
+        if(user.verifyOtpExpireAt < Date.now()){
+           return res.json({success: false, message: 'OTP has expired!'});
+        }
+
+        user.isAccountVerified = true;
+        user.verifyOtp = '';
+        user.verifyOtpExpireAt = 0;
+        await user.save();
+
+       return res.json({success: true, message: "User Email has been Successfully verified"})
+        
+    } catch (error) {
+       return res.json({success: false, message: error.message});
+    }
+}
