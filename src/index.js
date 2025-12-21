@@ -8,6 +8,7 @@ import connectDB from "./config/mongodb.js";
 import authRouter from "./routes/authRoutes.js"
 import userRouter from "./routes/userRoutes.js";
 import absenceRouter from "./routes/absenceRoutes.js";
+import announcementRoutes from "./routes/announcements.js";
 
 // Global instances
 const app = express();
@@ -29,6 +30,7 @@ app.get("/", (req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 app.use('/api/absence', absenceRouter);
+app.use('/api/announcements', announcementRoutes);
 
 // Error route
 app.use((req, res) => {
