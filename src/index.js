@@ -10,6 +10,7 @@ import userRouter from "./routes/userRoutes.js";
 import absenceRouter from "./routes/absenceRoutes.js";
 import reliefAssignmentRouter from "./routes/reliefAssignmentRoutes.js";
 import announcementRoutes from "./routes/announcements.js";
+import timetableRouter from "./routes/timetableRoutes.js";
 
 // Global instances
 const app = express();
@@ -33,6 +34,7 @@ app.use('/api/user', userRouter);
 app.use('/api/absence', absenceRouter);
 app.use('/api', reliefAssignmentRouter);
 app.use('/api/announcements', announcementRoutes);
+app.use('/api/timetable', timetableRouter);
 
 // Error route
 app.use((req, res) => {
