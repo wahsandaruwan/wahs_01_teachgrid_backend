@@ -1,5 +1,5 @@
 import Absence from "../models/absenceModel.js";
-import Timetable from "../models/timetable.js";
+import Timetable from "../models/timetableModels.js";
 import ReliefAssignment from "../models/reliefAssignmentModel.js";
 import userModel from "../models/userModel.js";
 
