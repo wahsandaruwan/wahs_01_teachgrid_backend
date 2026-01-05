@@ -1,6 +1,6 @@
 import userModel from "../models/userModel.js";
 import attendanceModel from "../models/attendanceModel.js";
-import Absence from "../models/absenceModel.js"; // Ensure the filename matches exactly
+import Absence from "../models/absenceModel.js"; 
 import PDFDocument from 'pdfkit';
 import { stringify } from 'csv-stringify/sync';
 
