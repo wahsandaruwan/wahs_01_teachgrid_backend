@@ -22,9 +22,6 @@ export const initAttendance = async (req, res) => {
 
         // 1. Find teachers
         const teachers = await userModel.find({ role: 'teacher' });
-        
-        // DEBUG: Check if teachers are actually being found
-        console.log(`Initialising attendance for ${date}. Teachers found: ${teachers.length}`);
 
         if (teachers.length === 0) {
             return res.status(200).json({ 
@@ -53,12 +50,10 @@ export const initAttendance = async (req, res) => {
         // 2. Execute bulkWrite
         const result = await attendanceModel.bulkWrite(operations);
         
-        console.log("BulkWrite successful:", result.upsertedCount, "new records created.");
         
         res.json({ success: true, message: `Attendance initialized for ${date}` });
 
     } catch (error) {
-        // THIS IS KEY: It prints the actual error to your VS Code / Terminal console
         console.error("Error in initAttendance:", error); 
         res.status(500).json({ success: false, message: error.message });
     }
