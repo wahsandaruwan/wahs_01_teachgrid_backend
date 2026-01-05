@@ -5,8 +5,10 @@ import {
     getAttendanceByDate, 
     updateAttendance, 
     exportCSV, 
-    exportPDF 
+    exportPDF, 
+    getMyAttendance
 } from '../controllers/attendanceController.js';
+import userAuth from '../middleware/userAuth.js';
 
 const attendanceRouter = express.Router();
 
@@ -27,5 +29,8 @@ attendanceRouter.put('/:id', updateAttendance);
 // 5. Export routes
 attendanceRouter.get('/export/csv', exportCSV);
 attendanceRouter.get('/export/pdf', exportPDF);
+
+// 6. To get the logedin users attendance data
+attendanceRouter.get('/my-attendance', userAuth, getMyAttendance);
 
 export default attendanceRouter;

@@ -150,3 +150,23 @@ export const exportPDF = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// 7.0Get attendance history for the logged-in teacher
+export const getMyAttendance = async (req, res) => {
+    try {
+        // req.userId is set by your userAuth middleware
+        const teacherId = req.userId; 
+
+        if (!teacherId) {
+            return res.status(401).json({ success: false, message: "User ID not found in token" });
+        }
+
+        // Find all records where 'teacher' matches the logged-in user
+        const records = await attendanceModel.find({ teacher: teacherId })
+                                           .sort({ date: -1 }); // Newest first
+
+        res.json({ success: true, data: records });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
