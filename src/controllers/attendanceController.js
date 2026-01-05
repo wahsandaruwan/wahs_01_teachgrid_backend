@@ -130,24 +130,111 @@ export const exportCSV = async (req, res) => {
 // 6. Export PDF
 export const exportPDF = async (req, res) => {
     try {
-        const { date } = req.query;
-        const records = await attendanceModel.find({ date });
+        const { date, teacherId } = req.query;
+        
+        let query = {};
+        if (date) {
+            query.date = { $regex: `^${date}` };
+        }
 
-        const doc = new PDFDocument();
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=attendance_${date}.pdf`);
+        // If a teacherId is provided (Teacher Side), filter by that teacher
+        // If not provided (Admin Side), it fetches all teachers for that date
+        if (teacherId) {
+            query.teacher = teacherId;
+        }
 
-        doc.pipe(res);
-        doc.fontSize(20).text(`Attendance Report: ${date}`, { align: 'center' });
-        doc.moveDown();
+        // Fetch records
+        const records = await attendanceModel.find(query).sort({ date: 1 });
 
-        records.forEach((r, i) => {
-            doc.fontSize(12).text(`${i + 1}. ${r.teacherName} - ${r.status.toUpperCase()} (${r.checkIn || 'N/A'} - ${r.checkOut || 'N/A'})`);
+        // 2. CHECK IF DATA EXISTS
+        if (!records || records.length === 0) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "No records found for the selected period." 
+            });
+        }
+
+        // 3. GENERATE PDF
+        const doc = new PDFDocument({ margin: 30, size: 'A4' });
+
+        // Error handling for the PDF stream
+        doc.on('error', (err) => {
+            console.error("Stream Error:", err);
         });
 
+        // Set Response Headers for File Download
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=attendance_report_${date}.pdf`);
+
+        // Pipe the doc to the response
+        doc.pipe(res);
+
+        // --- PDF LAYOUT ---
+
+        // Header
+        doc.fontSize(22).fillColor('#1d4ed8').text(`Attendance Report`, { align: 'center' });
+        doc.fontSize(12).fillColor('#4b5563').text(`Generated on: ${new Date().toLocaleDateString()}`, { align: 'center' });
+        doc.fontSize(14).fillColor('#000000').text(`Period: ${date}`, { align: 'center' });
+        doc.moveDown(2);
+
+        // Table Header
+        doc.fontSize(10).font('Helvetica-Bold').fillColor('#374151');
+        const tableTop = doc.y;
+        doc.text('Date', 30, tableTop);
+        doc.text('Teacher Name', 110, tableTop);
+        doc.text('Status', 280, tableTop);
+        doc.text('Check In/Out', 400, tableTop);
+        
+        doc.moveTo(30, tableTop + 15).lineTo(560, tableTop + 15).strokeColor('#e5e7eb').stroke();
+        doc.moveDown(1);
+
+        // Records List
+        doc.font('Helvetica').fillColor('#1f2937');
+        records.forEach((r, i) => {
+            const currentY = doc.y;
+            
+            // Draw a light gray line between rows
+            if (i > 0) {
+                doc.moveTo(30, currentY - 5).lineTo(560, currentY - 5).strokeColor('#f3f4f6').stroke();
+            }
+
+            const statusLabel = r.status.charAt(0).toUpperCase() + r.status.slice(1);
+            const timing = `${r.checkIn || '--:--'} - ${r.checkOut || '--:--'}`;
+
+            doc.fontSize(9);
+            doc.text(r.date, 30, currentY);
+            doc.text(r.teacherName, 110, currentY, { width: 160 });
+            doc.text(statusLabel, 280, currentY);
+            doc.text(timing, 400, currentY);
+
+            doc.moveDown(1.2);
+
+            // Add new page if content exceeds height
+            if (doc.y > 750) {
+                doc.addPage();
+            }
+        });
+
+        // Footer
+        const pageCount = doc.bufferedPageRange().count;
+        for (let i = 0; i < pageCount; i++) {
+            doc.switchToPage(i);
+            doc.fontSize(8).fillColor('#9ca3af').text(
+                `Page ${i + 1} of ${pageCount}`,
+                30,
+                doc.page.height - 50,
+                { align: 'center' }
+            );
+        }
+
+        // Finalize
         doc.end();
+
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        console.error("PDF Export Error:", error);
+        if (!res.headersSent) {
+            res.status(500).json({ success: false, message: "Internal Server Error during PDF generation" });
+        }
     }
 };
 
