@@ -52,10 +52,10 @@ app.get("/api/test", (req, res) => {
 
 /* 404 */
 app.use((req, res) => {
-  res.status(404).json({ error: { message: "not found on this server!" } });
+  res.status(404).json({ message: "Not Found" });
 });
 
 
 app.listen(PORT, () => {
-  console.log(`Server is running ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
