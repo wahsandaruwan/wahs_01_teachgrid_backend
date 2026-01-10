@@ -36,7 +36,6 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/absence", absenceRouter);
-app.use("/api/relief", reliefAssignmentRouter);
 app.use("/api/relief-assignments", reliefAssignmentRouter);
 app.use("/api/announcements", announcementRoutes);
 app.use("/api/timetable", timetableRoutes);
