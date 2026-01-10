@@ -20,7 +20,7 @@ const app = express();
 const PORT = process.env.PORT || 3301;
 connectDB();
 
-// Common Middleware
+/* Middleware */
 app.use(cors({
   origin: "http://localhost:5173",
   credentials: true,
@@ -28,7 +28,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// Base route
+/* Routes */
 app.get("/", (req, res) => {
   res.json({ message: "Server running" });
 });
@@ -44,12 +44,17 @@ app.use("/api/teachers", teacherSettingsRouter);
 app.use("/api/admin", adminSettingsRoutes);
 
 
-// Error route
+/* Test */
+app.get("/api/test", (req, res) => {
+  res.send("API WORKING");
+});
+
+/* 404 */
 app.use((req, res) => {
   res.status(404).json({ error: { message: "not found on this server!" } });
 });
 
-// Initialize the connection
+
 app.listen(PORT, () => {
   console.log(`Server is running ${PORT}`);
 });
