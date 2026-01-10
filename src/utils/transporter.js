@@ -17,7 +17,7 @@ transporter.verify((error, success) => {
   if (error) {
     console.log("Nodemailer Error: ", error);
   } else {
-    console.log("Mail Server is ready! (Mailtrap Connected)");
+    console.log("Mail Server is ready!");
   }
 });
 
