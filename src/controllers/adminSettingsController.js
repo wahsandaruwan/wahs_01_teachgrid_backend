@@ -47,7 +47,7 @@ export const updateAdminProfile = async (req, res) => {
 
     const mailOptions = {
       from: '"TeachGrid Admin Services" <admin@teachgrid.com>',
-      to: admin.email,
+      to: updatedAdmin.email,
       subject: "Profile Updated Successfully - TeachGrid",
       html: `
         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: auto; color: #333; border: 1px solid #f0f0f0; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
@@ -57,25 +57,23 @@ export const updateAdminProfile = async (req, res) => {
             </div>
 
             <div style="padding: 40px 30px;">
-                <p style="font-size: 16px; color: #555; margin-top: 0;">Dear <b>${name}</b>,</p>
+                <p style="font-size: 16px; color: #555; margin-top: 0;">Dear <b>${updatedAdmin.name
+        }</b>,</p>
                 <p style="font-size: 15px; color: #666; line-height: 1.6;">Your account profile settings have been successfully updated. Review your details below:</p>
 
                 <div style="background-color: #f9faff; border-radius: 12px; padding: 25px; margin: 25px 0; border: 1px solid #edf2f7;">
-                    <p style="margin: 8px 0; font-size: 14px;"><b>Full Name:</b> ${name}</p>
-                    <p style="margin: 8px 0; font-size: 14px;"><b>Phone:</b> ${
-                      phoneNum || "Not Set"
-                    }</p>
-                    <p style="margin: 8px 0; font-size: 14px;"><b>Address:</b> ${
-                      address || "Not Set"
-                    }</p>
-                    <p style="margin: 8px 0; font-size: 14px;"><b>Email:</b> ${
-                      admin.email
-                    }</p>
+                    <p style="margin: 8px 0; font-size: 14px;"><b>Full Name:</b> ${updatedAdmin.name
+        }</p>
+                    <p style="margin: 8px 0; font-size: 14px;"><b>Phone:</b> ${updatedAdmin.phoneNum || "Not Set"
+        }</p>
+                    <p style="margin: 8px 0; font-size: 14px;"><b>Address:</b> ${updatedAdmin.address || "Not Set"
+        }</p>
+                    <p style="margin: 8px 0; font-size: 14px;"><b>Email:</b> ${updatedAdmin.email
+        }</p>
                 </div>
 
-                ${
-                  isPasswordChanged
-                    ? `
+                ${isPasswordChanged
+          ? `
                 <div style="background-color: #fff5f5; border: 2px solid #feb2b2; border-radius: 12px; padding: 20px; text-align: center; margin-top: 25px;">
                     <p style="margin: 0 0 10px 0; color: #c53030; font-weight: bold; font-size: 15px; text-transform: uppercase;">New Password Security Update</p>
                     <p style="margin: 0 0 15px 0; font-size: 13px; color: #742a2a;">Your password was changed. Use this for your next login:</p>
@@ -84,14 +82,14 @@ export const updateAdminProfile = async (req, res) => {
                     </div>
                 </div>
                 `
-                    : `
+          : `
                 <div style="background-color: #f0fff4; border-radius: 12px; padding: 20px; border: 1px solid #c6f6d5; margin-top: 25px;">
                     <p style="margin: 0; color: #2f855a; font-size: 14px; line-height: 1.5;">
                         <b>Security Note:</b> Password was not changed during this update. Please continue to use your <b>existing password</b> to access the dashboard.
                     </p>
                 </div>
                 `
-                }
+        }
 
                 <div style="text-align: center; margin-top: 35px;">
                     <a href="${signinUrl}" style="background-color: #5d51ff; color: white; padding: 15px 40px; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 15px; display: inline-block; box-shadow: 0 4px 10px rgba(93, 81, 255, 0.3);">Go to Dashboard</a>
@@ -148,35 +146,41 @@ export const updateTeacher = async (req, res) => {
       new: true,
     });
 
+    if (!updatedTeacher) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Teacher not found" });
+    }
+
     const frontendUrl = "http://localhost:5173";
     const signinUrl = `${frontendUrl}/signin`;
 
     const mailOptions = {
       from: '"TeachGrid Admin" <admin@teachgrid.com>',
-      to: email,
+      to: updatedTeacher.email,
       subject: "⚠️ Security Alert: Your TeachGrid Account Details Updated",
       html: `
         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: auto; color: #333; line-height: 1.6;">
-            <p style="font-size: 16px; color: #555;">Dear <b>${name}</b>,</p>
+            <p style="font-size: 16px; color: #555;">Dear <b>${updatedTeacher.name
+        }</b>,</p>
             <p style="font-size: 15px; color: #555;">This is an automated message to inform you that your profile details have been updated in the <b>TeachGrid Management System</b>.</p>
 
             <div style="background-color: #f8faff; border: 1px solid #eef2f7; border-radius: 12px; padding: 25px; margin: 20px 0;">
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr style="height: 40px;">
                         <td style="width: 35px; vertical-align: middle;">📩</td>
-                        <td style="font-size: 15px;"><b>Email:</b> ${email}</td>
+                        <td style="font-size: 15px;"><b>Email:</b> ${updatedTeacher.email
+        }</td>
                     </tr>
                     <tr style="height: 40px;">
                         <td style="vertical-align: middle;">📞</td>
-                        <td style="font-size: 15px;"><b>Phone:</b> ${
-                          phoneNum || "Not Provided"
-                        }</td>
+                        <td style="font-size: 15px;"><b>Phone:</b> ${updatedTeacher.phoneNum || "Not Provided"
+        }</td>
                     </tr>
                     <tr style="height: 40px;">
                         <td style="vertical-align: middle;">📍</td>
-                        <td style="font-size: 15px;"><b>Address:</b> ${
-                          address || "Not Provided"
-                        }</td>
+                        <td style="font-size: 15px;"><b>Address:</b> ${updatedTeacher.address || "Not Provided"
+        }</td>
                     </tr>
                 </table>
             </div>
@@ -186,16 +190,14 @@ export const updateTeacher = async (req, res) => {
                     SECURITY NOTICE: 
                 </h3>
                 
-                ${
-                  password && password.trim() !== ""
-                    ? ` <span style="font-weight: normal; color: #4a5568; text-transform: none;">Your login password has been reset by the administrator.</span>
+                ${password && password.trim() !== ""
+          ? ` <span style="font-weight: normal; color: #4a5568; text-transform: none;">Your login password has been reset by the administrator.</span>
                     <div style="margin-top: 15px; padding: 12px; background: #fff; border: 1px dashed #feb2b2; display: inline-block; border-radius: 6px;">
                     
-                        <span style="font-size: 14px; color: #718096;">New Password: </span>
-                        <b style="font-size: 18px; color: #c53030; font-family: monospace;">${password}</b>
+                        <span style="font-size: 14px; color: #718096;">Please contact the administrator to receive your new login credentials.</span>
                        </div>`
-                    : `<p style="margin: 5px 0 0 0; font-size: 14px; color: #4a5568;">Please use your <b>existing password</b> for future logins.</p>`
-                }
+          : `<p style="margin: 5px 0 0 0; font-size: 14px; color: #4a5568;">Please use your <b>existing password</b> for future logins.</p>`
+        }
             </div>
 
             <p style="font-size: 13px; color: #718096; margin-top: 30px; text-align: center;">
@@ -260,8 +262,7 @@ export const updateTeacherPassword = async (req, res) => {
                     <h3 style="color: #2c3e50;">Security Update</h3>
                     <p>The administrator has reset your account password.</p>
                     <div style="background: #f9f9f9; padding: 15px; border: 1px solid #eee; margin: 20px 0; border-radius: 8px;">
-                        <p style="margin: 0; font-size: 14px;">Your New Password:</p>
-                        <p style="color: #e74c3c; font-size: 20px; font-weight: bold; margin: 5px 0;">${newPassword}</p>
+                        <p style="color: #e74c3c; font-size: 16px; font-weight: bold; margin: 5px 0;">Please contact the administrator for your new credentials.</p>
                     </div>
                     <p>Please use this credential to log in to your account.</p>
                     <a href="${signinUrl}" style="background-color: #0a035f; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block; margin-top: 10px;">Login Now</a>
