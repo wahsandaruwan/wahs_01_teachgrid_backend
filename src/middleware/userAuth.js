@@ -24,4 +24,14 @@ const userAuth = async (req, res, next) =>{
     }
 }
 
+export const isAdmin = (req, res, next) => {
+    if (req.userRole !== 'admin') {
+        return res.json({ 
+            success: false, 
+            message: 'Access Denied: You do not have permission to perform this action.' 
+        });
+    }
+    next();
+};
+
 export default userAuth;
