@@ -1,8 +1,10 @@
 import express from "express";
-import { getTotalTeachers } from "../controllers/adminDashboardController.js";
+import { getTodayAttendanceSummary } from "../controllers/adminDashboardController.js";
+import userAuth from "../middleware/userAuth.js";
 
 const router = express.Router();
 
-router.get("/stats/total-teachers", getTotalTeachers);
+// Dashboard: total teachers + today's attendance + pending leave count
+router.get("/stats/today-summary", userAuth, getTodayAttendanceSummary);
 
 export default router;
