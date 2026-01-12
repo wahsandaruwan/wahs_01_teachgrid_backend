@@ -1,60 +1,56 @@
 import userModel from "../models/userModel.js";
 import attendanceModel from "../models/attendanceModel.js";
 import leaveModel from "../models/leaveModel.js";
+import ReliefAssignment from "../models/reliefAssignmentModel.js";
 
-// Get total teachers, today's attendance summary, and pending leave count
 export const getTodayAttendanceSummary = async (req, res) => {
   try {
-    // 1. Total teachers
     const totalTeachers = await userModel.countDocuments({ role: "teacher" });
-
-    // 2. Today's date (YYYY-MM-DD)
     const today = new Date().toISOString().split("T")[0];
 
-    // 3. Attendance counts
-    const presentCount = await attendanceModel.countDocuments({
-      date: today,
-      status: "present"
-    });
-
-    const lateCount = await attendanceModel.countDocuments({
-      date: today,
-      status: "late"
-    });
-
-    const leaveCount = await attendanceModel.countDocuments({
-      date: today,
-      status: "leave"
-    });
-
-    const unmarkedCount = await attendanceModel.countDocuments({
-      date: today,
-      status: "unmarked"
-    });
-
-    // 4. Pending leave requests count
-    const pendingLeaveCount = await leaveModel.countDocuments({
-      status: "Pending"
-    });
+    const [present, late, leave, unmarked, pendingLeaveCount, pendingReliefCount] = await Promise.all([
+      attendanceModel.countDocuments({ date: today, status: "present" }),
+      attendanceModel.countDocuments({ date: today, status: "late" }),
+      attendanceModel.countDocuments({ date: today, status: "leave" }),
+      attendanceModel.countDocuments({ date: today, status: "unmarked" }),
+      leaveModel.countDocuments({ status: "Pending" }),
+      ReliefAssignment.countDocuments({ status: "pending" })
+    ]);
 
     res.status(200).json({
       success: true,
+      date: today,
       totalTeachers,
-      today,
-      attendanceSummary: {
-        present: presentCount,
-        late: lateCount,
-        leave: leaveCount,
-        unmarked: unmarkedCount
-      },
-      pendingLeaveCount
+      attendanceSummary: { present, late, leave, unmarked },
+      pendingLeaveCount,
+      pendingReliefCount
     });
-
   } catch (error) {
-    console.error("Admin dashboard error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error"
-    });
+    console.error("Dashboard summary error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const getTodayTeacherAvailability = async (req, res) => {
+  try {
+    const today = new Date().toISOString().split("T")[0];
+    const records = await attendanceModel.find({ date: today }).select("teacherName status -_id").sort({ teacherName: 1 });
+    res.status(200).json({ success: true, date: today, teachers: records });
+  } catch (error) {
+    console.error("Today availability error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const getTeacherAvailabilityByDate = async (req, res) => {
+  try {
+    const { date } = req.query;
+    if (!date) return res.status(400).json({ success: false, message: "Date is required (YYYY-MM-DD)" });
+
+    const records = await attendanceModel.find({ date }).select("teacherName status -_id").sort({ teacherName: 1 });
+    res.status(200).json({ success: true, date, teachers: records });
+  } catch (error) {
+    console.error("Availability by date error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
