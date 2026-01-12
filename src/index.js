@@ -12,6 +12,7 @@ import announcementRoutes from "./routes/announcements.js";
 import timetableRoutes from "./routes/timetableRoutes.js";
 import attendanceRouter from "./routes/attendanceRoutes.js";
 import leaveRouter from "./routes/leaveRoutes.js";
+import adminDashboardRoutes from "./routes/adminDashboardRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3301;
@@ -39,6 +40,7 @@ app.use("/api/announcements", announcementRoutes);
 app.use("/api/timetable", timetableRoutes);
 app.use('/api/attendance', attendanceRouter);
 app.use('/api/leave', leaveRouter);
+app.use("/api/admin-dashboard", adminDashboardRoutes);
 
 
 /* Test */
