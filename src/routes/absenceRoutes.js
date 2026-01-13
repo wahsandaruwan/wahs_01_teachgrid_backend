@@ -1,9 +1,15 @@
 import express from "express";
 import userAuth from "../middleware/userAuth.js";
-import { markTeacherAbsent } from "../controllers/absenceController.js";
+import {
+  getTodayAttendanceSummary,
+  getTodayTeacherAvailability,
+  getTeacherAvailabilityByDate
+} from "../controllers/adminDashboardController.js";
 
-const absenceRouter = express.Router();
+const router = express.Router();
 
-absenceRouter.post("/mark-absent", userAuth, markTeacherAbsent);
+router.get("/stats/today-summary", userAuth, getTodayAttendanceSummary);
+router.get("/availability/today", userAuth, getTodayTeacherAvailability);
+router.get("/availability", userAuth, getTeacherAvailabilityByDate);
 
-export default absenceRouter;
+export default router;
