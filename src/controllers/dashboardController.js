@@ -1,12 +1,11 @@
 import Attendance from "../models/attendanceModel.js";
-import Absence from "../models/absenceModel.js";
 import ReliefAssignment from "../models/reliefAssignmentModel.js";
 import Announcement from "../models/announcementModel.js";
 import leaveModel from "../models/leaveModel.js";
 
 export const getTeacherDashboard = async (req, res) => {
   try {
-    const teacherId = req.userId; // from JWT
+    const teacherId = req.userId; 
 
     /* Attendance */
     const totalAttendance = await Attendance.countDocuments({
@@ -25,7 +24,7 @@ export const getTeacherDashboard = async (req, res) => {
       status: "Approved",
     });
 
-    const totalLeaves = 40; // fixed or config based
+    const totalLeaves = 40; 
 
     /* Relief Duties */
     const reliefDuties = await ReliefAssignment.countDocuments({
@@ -42,7 +41,7 @@ export const getTeacherDashboard = async (req, res) => {
       .populate("attendance");
 
   
-    /* Latest Announcement */
+    /* Upcoming Latest Announcement */
     const latestAnnouncement = await Announcement.findOne()
       .sort({ createdAt: -1 });
 
