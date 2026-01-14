@@ -14,6 +14,7 @@ import attendanceRouter from "./routes/attendanceRoutes.js";
 import leaveRouter from "./routes/leaveRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
 import teacherRouter  from "./routes/teacherRoutes.js";
+import adminDashboardRouter from "./routes/adminDashboardRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3301;
@@ -43,6 +44,8 @@ app.use('/api/attendance', attendanceRouter);
 app.use('/api/leave', leaveRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/teacher', teacherRouter);
+app.use('/api/admin-dashboard', adminDashboardRouter);
+
 
 /* Test */
 app.get("/api/test", (req, res) => {
