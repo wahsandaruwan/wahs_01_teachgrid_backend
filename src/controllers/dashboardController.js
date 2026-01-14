@@ -32,24 +32,19 @@ export const getTeacherDashboard = async (req, res) => {
 
     /* Relief Duties */
     const reliefDuties = await ReliefAssignment.countDocuments({
-      teacher: teacherId,
-      completed: true,
+      reliefTeacher: teacherId,
+      status: "completed",
     });
 
     /* Upcoming Relief */
-    const upcomingReliefList = await ReliefAssignment.find({
-      teacher: teacherId,
-      completed: false,
-      date: { $gte: new Date() },
+    const upcomingRelief  = await ReliefAssignment.findOne({
+      reliefTeacher: teacherId,
+      status: "assigned",
     })
-      .sort({ date: 1 })
-      .limit(1);
+      .sort({ createdAt: -1 })
+      .populate("attendance");
 
-    const upcomingRelief =
-      upcomingReliefList.length > 0 ? upcomingReliefList[0] : null;
-
-      
-
+  
     /* Latest Announcement */
     const latestAnnouncement = await Announcement.findOne()
       .sort({ createdAt: -1 });
@@ -58,13 +53,15 @@ export const getTeacherDashboard = async (req, res) => {
       attendanceRate,
       approvedLeaves: `${approvedLeaves} / ${totalLeaves}`,
       reliefDuties,
-      upcomingRelief,
+      upcomingRelief: upcomingRelief || null, 
       latestAnnouncement,
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to load dashboard",
-      error: error.message,
-    });
-  }
+     console.error("Dashboard Error:", error);
+
+     res.status(500).json({
+       message: "Failed to load dashboard",
+       error: error.message,
+  });
+}
 };
